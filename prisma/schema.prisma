@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // Swap to "postgresql" for production; no other code changes needed.
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("USER")
+  orders       Order[]
+  createdAt    DateTime @default(now())
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  name        String
+  description String
+  category    String
+  priceCents  Int
+  stock       Int         @default(0)
+  imageSeed   String
+  createdAt   DateTime    @default(now())
+  orderItems  OrderItem[]
+
+  @@index([category])
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  user           User        @relation(fields: [userId], references: [id])
+  userId         String
+  status         String      @default("PAID")
+  totalCents     Int
+  shippingName   String
+  shippingLine1  String
+  shippingCity   String
+  shippingZip    String
+  items          OrderItem[]
+  createdAt      DateTime    @default(now())
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id             String  @id @default(cuid())
+  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId        String
+  product        Product @relation(fields: [productId], references: [id])
+  productId      String
+  quantity       Int
+  unitPriceCents Int
+
+  @@index([orderId])
+  @@index([productId])
+}
