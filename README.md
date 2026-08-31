@@ -111,5 +111,3 @@ npm run start
   in the schema) — swap for real product photography and consider `next/image` with
   a configured remote pattern.
 
-See `docs/COMMIT_PLAN.md` for a suggested day-by-day breakdown if you're pushing this
-incrementally.
